@@ -14,7 +14,7 @@ app.use(express.json());
 
 // --- 1. Önce Statik Dosyalar (CSS, JS, Resimler) ---
 // Bu satır her zaman rotalardan yukarıda olmalı
-app.use(express.static(path.join(__dirname, "..", "public")));
+app.use(express.static(path.join(__dirname, "public")));
 
 /* ================= MAIL AYARI ================= */
 const transporter = nodemailer.createTransport({
