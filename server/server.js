@@ -4,25 +4,24 @@ require("dotenv").config();
 const express = require("express");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
+const path = require("path"); // 1. Path modülünü ekledik
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("../public"));
+
+// 2. Statik dosya yolunu Render/Linux uyumlu hale getirdik
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 /* ================= MAIL AYARI ================= */
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com", // Gmail SMTP
-  port: 465,
-  secure: true,           // SSL
+  service: "gmail", // Gmail için en kısa ve güvenli yol
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  connectionTimeout: 10000,
-  family: 4, // ⚡ Render için IPv4 zorlaması
 });
 
 /* ================= MAIL GÖNDERME ================= */
@@ -37,7 +36,7 @@ app.post("/send-mail", async (req, res) => {
   try {
     await transporter.sendMail({
       from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER, // Kendi mailine gönderiyorsun
       subject: "Portfolio İletişim Formu",
       text: `İsim: ${name}\nEmail: ${email}\nMesaj: ${message}`,
       html: `<p><strong>İsim:</strong> ${name}</p>
@@ -48,6 +47,7 @@ app.post("/send-mail", async (req, res) => {
     res.json({ message: "Mesaj başarıyla gönderildi ✅" });
   } catch (err) {
     console.error("MAIL HATASI:", err);
+    // Hata detayını frontend'e gönderiyoruz ki sorunu görebilelim
     res.status(500).json({ message: "Mail gönderilemedi ❌", details: err.message });
   }
 });
@@ -62,11 +62,10 @@ app.get("/test-mail", async (req, res) => {
       subject: "TEST MAIL",
       text: "Mail sistemi çalışıyor 🚀",
     });
-
     res.send("Mail gönderildi ✅");
   } catch (err) {
-    console.log(err);
-    res.send("HATA ❌");
+    console.error(err);
+    res.status(500).send(`HATA ❌: ${err.message}`);
   }
 });
 
