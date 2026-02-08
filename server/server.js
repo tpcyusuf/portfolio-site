@@ -69,7 +69,7 @@ app.get("/test-mail", async (req, res) => {
 
 // --- 2. EN SONDA: Tüm sayfaları index.html'e yönlendir ---
 // (Bu satır tüm API rotalarının altında olmalı)
-app.get("*", (req, res) => {
+app.get("(.*)", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
 
