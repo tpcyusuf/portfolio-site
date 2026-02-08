@@ -14,7 +14,7 @@ app.use(express.json());
 
 // --- 1. Önce Statik Dosyalar (CSS, JS, Resimler) ---
 // Bu satır her zaman rotalardan yukarıda olmalı
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "..",  "public")));
 
 
 /* ================= MAIL AYARI ================= */
@@ -77,7 +77,7 @@ app.get("/test-mail", async (req, res) => {
 // --- 2. EN SONDA: Tüm sayfaları index.html'e yönlendir ---
 // (Bu satır tüm API rotalarının altında olmalı)
 app.use((req, res) => { 
-	res.sendFile(path.join(__dirname, "public", "index.html")); 
+	res.sendFile(path.join(__dirname, "..", "public", "index.html")); 
 	}
 );
 
