@@ -53,6 +53,7 @@ try {
 
   res.json({ message: "Mesaj başarıyla gönderildi ✅" });
 } catch (err) {
+  console.error("MAİL HATASI:", err); // Render loglarında hatanın detayını görmeni sağlar
   res.status(500).json({ message: "Mail gönderilemedi ❌", details: err.message });
   }
 });
