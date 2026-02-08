@@ -1,0 +1,11 @@
+# Şifrelerin olduğu gizli dosya
+.env
+server/.env
+
+# Yüklenen kütüphaneler (Zaten Render bunları otomatik kurar)
+node_modules/
+server/node_modules/
+
+# Log dosyaları ve sistem dosyaları
+.DS_Store
+npm-debug.log*
