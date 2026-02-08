@@ -8,7 +8,7 @@ form.addEventListener("submit", async (e) => {
   const message = form.querySelector('textarea[name="message"]').value;
 
   try {
-    const res = await fetch("/send-mail", {
+    const res = await fetch("https://portfolio-site-ox1v.onrender.com/send-mail", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
