@@ -4,31 +4,32 @@ require("dotenv").config();
 const express = require("express");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
-const path = require("path"); // 1. Path modülünü ekledik
+const path = require("path");
 
 const app = express();
 
+// --- Middleware ---
 app.use(cors());
 app.use(express.json());
 
-// 2. Statik dosya yolunu Render/Linux uyumlu hale getirdik
+// --- 1. Önce Statik Dosyalar (CSS, JS, Resimler) ---
+// Bu satır her zaman rotalardan yukarıda olmalı
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 /* ================= MAIL AYARI ================= */
-
 const transporter = nodemailer.createTransport({
-  service: "gmail", // Gmail için en kısa ve güvenli yol
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_PASS, // Burası 'Uygulama Şifresi' olmalı
   },
 });
 
-/* ================= MAIL GÖNDERME ================= */
+/* ================= ROTALAR ================= */
 
+// Mail Gönderme
 app.post("/send-mail", async (req, res) => {
   const { name, email, message } = req.body;
-
   if (!name || !email || !message) {
     return res.status(400).json({ message: "Tüm alanlar doldurulmalı ❌" });
   }
@@ -36,24 +37,21 @@ app.post("/send-mail", async (req, res) => {
   try {
     await transporter.sendMail({
       from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER, // Kendi mailine gönderiyorsun
+      to: process.env.EMAIL_USER,
       subject: "Portfolio İletişim Formu",
       text: `İsim: ${name}\nEmail: ${email}\nMesaj: ${message}`,
       html: `<p><strong>İsim:</strong> ${name}</p>
              <p><strong>Email:</strong> ${email}</p>
              <p><strong>Mesaj:</strong> ${message}</p>`,
     });
-
     res.json({ message: "Mesaj başarıyla gönderildi ✅" });
   } catch (err) {
     console.error("MAIL HATASI:", err);
-    // Hata detayını frontend'e gönderiyoruz ki sorunu görebilelim
     res.status(500).json({ message: "Mail gönderilemedi ❌", details: err.message });
   }
 });
 
-/* ================= TEST ENDPOINT ================= */
-
+// Test Endpoint
 app.get("/test-mail", async (req, res) => {
   try {
     await transporter.sendMail({
@@ -69,9 +67,14 @@ app.get("/test-mail", async (req, res) => {
   }
 });
 
-/* ================= SERVER ================= */
+// --- 2. EN SONDA: Tüm sayfaları index.html'e yönlendir ---
+// (Bu satır tüm API rotalarının altında olmalı)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+});
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server çalışıyor → http://localhost:${PORT}`);
+/* ================= SERVER BAŞLATMA ================= */
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server çalışıyor → Port: ${PORT}`);
 });
